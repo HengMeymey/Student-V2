@@ -29,7 +29,8 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        return ResponseEntity.ok(studentService.saveStudent(student));
+        Student createdStudent = studentService.saveStudent(student);
+        return ResponseEntity.ok(createdStudent);
     }
 
     @DeleteMapping("/{id}")
