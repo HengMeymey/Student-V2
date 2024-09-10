@@ -54,6 +54,18 @@ public Student saveStudent(Student student) {
     return studentRepository.save(student);
 }
 
+    public Student updateStudent(Long id, Student updatedStudent) {
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        existingStudent.setName(updatedStudent.getName());
+        existingStudent.setContact(updatedStudent.getContact());
+        existingStudent.setDob(updatedStudent.getDob());
+        existingStudent.setGender(updatedStudent.getGender());
+        existingStudent.setStudentStatus(updatedStudent.getStudentStatus());
+        existingStudent.setDepartment(updatedStudent.getDepartment());
+        return studentRepository.save(existingStudent);
+    }
+
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);
     }

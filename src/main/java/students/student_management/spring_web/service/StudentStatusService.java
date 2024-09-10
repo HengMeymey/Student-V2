@@ -28,6 +28,12 @@ public class StudentStatusService {
     public StudentStatus saveStudentStatus(StudentStatus studentStatus) {
         return studentStatusRepository.save(studentStatus);
     }
+    public StudentStatus updateStudentStatus(Long id, StudentStatus updatedStatus) {
+        StudentStatus existingStatus = studentStatusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("StudentStatus not found with id: " + id));
+        existingStatus.setName(updatedStatus.getName());
+        return studentStatusRepository.save(existingStatus);
+    }
 
     public void deleteStudentStatus(Long id) {
         studentStatusRepository.deleteById(id);

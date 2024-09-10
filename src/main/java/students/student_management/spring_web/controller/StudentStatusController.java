@@ -33,6 +33,14 @@ public class StudentStatusController {
         return ResponseEntity.ok(studentStatusService.saveStudentStatus(studentStatus));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<StudentStatus> updateStudentStatus(
+            @PathVariable Long id,
+            @RequestBody StudentStatus updatedStatus) {
+        StudentStatus studentStatus = studentStatusService.updateStudentStatus(id, updatedStatus);
+        return ResponseEntity.ok(studentStatus);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudentStatus(@PathVariable Long id) {
         studentStatusService.deleteStudentStatus(id);
