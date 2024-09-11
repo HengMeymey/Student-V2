@@ -26,6 +26,6 @@ public class Enrollment {
     @Temporal(TemporalType.DATE)
     private Date enrollmentDate;
 
-    @Column(nullable = true)
-    private Float grade;
+    @Column(nullable = false)
+    private Integer year;
 }
