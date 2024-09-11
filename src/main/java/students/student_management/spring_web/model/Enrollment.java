@@ -10,6 +10,7 @@ import java.util.Date;
 @Setter
 @Entity
 public class Enrollment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +21,7 @@ public class Enrollment {
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
-    private Class aClass;
+    private Class courseClass;
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
@@ -28,4 +29,14 @@ public class Enrollment {
 
     @Column(nullable = false)
     private Integer year;
+
+//    public Enrollment() {
+//    }
+//
+//    public Enrollment(Student student, Class courseClass, Date enrollmentDate, Integer year) {
+//        this.student = student;
+//        this.courseClass = courseClass;
+//        this.enrollmentDate = enrollmentDate;
+//        this.year = year;
+//    }
 }

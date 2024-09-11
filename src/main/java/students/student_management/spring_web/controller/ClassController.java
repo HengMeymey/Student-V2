@@ -35,29 +35,38 @@ public class ClassController {
         return ResponseEntity.ok(classService.getClassById(id));
     }
 
-//    @PostMapping
-//    public ResponseEntity<Class> createClass(@RequestBody Class classEntity) {
-//        Class savedClass = classService.saveClass(classEntity);
-//        return ResponseEntity.ok(savedClass);
-//    }
-
     @PostMapping
     public ResponseEntity<Class> createClass(@RequestBody Class classEntity) {
-        // Retrieve the existing Course entity
         Course course = courseRepository.findById(classEntity.getCourse().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        // Set the course property of the Class entity
         classEntity.setCourse(course);
 
-        // Save the Class entity
         Class savedClass = classService.saveClass(classEntity);
         return ResponseEntity.ok(savedClass);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Class> updateClass(@PathVariable Long id, @RequestBody Class classDetails) {
+        Class existingClass = classService.getClassById(id);
+        existingClass.setName(classDetails.getName());
+
+        Course course = courseRepository.findById(classDetails.getCourse().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        existingClass.setCourse(course);
+
+        Class updatedClass = classService.saveClass(existingClass);
+        return ResponseEntity.ok(updatedClass);
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClass(@PathVariable Long id) {
-        classService.deleteClass(id);
-        return ResponseEntity.noContent().build();
+        try {
+            classService.deleteClass(id);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

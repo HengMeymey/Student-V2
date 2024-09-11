@@ -38,6 +38,9 @@ public class ClassService {
     }
 
     public void deleteClass(Long id) {
-        classRepository.deleteById(id);
+        Class existingClass = classRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + id));
+        classRepository.delete(existingClass);
     }
+
 }
