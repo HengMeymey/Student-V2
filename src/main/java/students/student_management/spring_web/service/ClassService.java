@@ -14,6 +14,7 @@ import java.util.List;
 
 @Service
 public class ClassService {
+
     @Autowired
     private ClassRepository classRepository;
 
@@ -21,11 +22,9 @@ public class ClassService {
     private CourseRepository courseRepository;
 
     public Class saveClass(Class classEntity) {
-        if (classEntity.getCourse() != null && classEntity.getCourse().getId() != null) {
-            Course course = courseRepository.findById(classEntity.getCourse().getId()).orElse(null);
-            classEntity.setCourse(course);
-        }
-
+        Course course = courseRepository.findById(classEntity.getCourse().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + classEntity.getCourse().getId()));
+        classEntity.setCourse(course);
         return classRepository.save(classEntity);
     }
 
@@ -34,13 +33,13 @@ public class ClassService {
     }
 
     public Class getClassById(Long id) {
-        return classRepository.findById(id).orElse(null);
+        return classRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found with id: " + id));
     }
 
     public void deleteClass(Long id) {
         Class existingClass = classRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found with id: " + id));
         classRepository.delete(existingClass);
     }
-
 }

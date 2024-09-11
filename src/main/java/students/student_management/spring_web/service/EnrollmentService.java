@@ -2,6 +2,7 @@ package students.student_management.spring_web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Enrollment;
 import students.student_management.spring_web.model.Student;
 import students.student_management.spring_web.model.Class;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
+
     @Autowired
     private StudentRepository studentRepository;
 
@@ -30,9 +32,9 @@ public class EnrollmentService {
     public Enrollment saveEnrollment(Enrollment enrollment) {
         // Fetch the student and class by their IDs
         Student student = studentRepository.findById(enrollment.getStudent().getId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + enrollment.getStudent().getId()));
         Class courseClass = classRepository.findById(enrollment.getCourseClass().getId())
-                .orElseThrow(() -> new RuntimeException("Class not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + enrollment.getCourseClass().getId()));
 
         // Set the fully populated student and courseClass in the enrollment
         enrollment.setStudent(student);
@@ -42,34 +44,23 @@ public class EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
-    public List<Enrollment> getEnrollmentsByStudent(Student student) {
-        return enrollmentRepository.findByStudent(student);
-    }
-
-    public List<Enrollment> getEnrollmentsByCourseClass(Class courseClass) {
-        return enrollmentRepository.findByCourseClass(courseClass);  // Updated
-    }
     public List<Enrollment> getAllEnrollments() {
         return enrollmentRepository.findAll();
     }
 
     public Enrollment updateEnrollment(Long id, Enrollment updatedEnrollment) {
-        Optional<Enrollment> existingEnrollmentOpt = enrollmentRepository.findById(id);
-        if (!existingEnrollmentOpt.isPresent()) {
-            throw new RuntimeException("Enrollment not found with ID: " + id);
-        }
-
-        Enrollment existingEnrollment = existingEnrollmentOpt.get();
+        Enrollment existingEnrollment = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with ID: " + id));
 
         if (updatedEnrollment.getStudent() != null) {
             Student student = studentRepository.findById(updatedEnrollment.getStudent().getId())
-                    .orElseThrow(() -> new RuntimeException("Student not found with ID: " + updatedEnrollment.getStudent().getId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + updatedEnrollment.getStudent().getId()));
             existingEnrollment.setStudent(student);
         }
 
         if (updatedEnrollment.getCourseClass() != null) {
             Class courseClass = classRepository.findById(updatedEnrollment.getCourseClass().getId())
-                    .orElseThrow(() -> new RuntimeException("Class not found with ID: " + updatedEnrollment.getCourseClass().getId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + updatedEnrollment.getCourseClass().getId()));
             existingEnrollment.setCourseClass(courseClass);
         }
 
@@ -81,7 +72,7 @@ public class EnrollmentService {
 
     public void deleteEnrollment(Long id) {
         if (!enrollmentRepository.existsById(id)) {
-            throw new RuntimeException("Enrollment not found with ID: " + id);
+            throw new ResourceNotFoundException("Enrollment not found with ID: " + id);
         }
         enrollmentRepository.deleteById(id);
     }

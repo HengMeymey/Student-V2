@@ -14,6 +14,7 @@ import java.util.List;
 
 @Service
 public class CourseService {
+
     @Autowired
     private CourseRepository courseRepository;
 
@@ -24,21 +25,14 @@ public class CourseService {
     private DepartmentRepository departmentRepository;
 
     public Course saveCourse(Course course) {
-        // Fetching the existing entities
         Time time = timeRepository.findById(course.getTime().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Time not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Time not found with id: " + course.getTime().getId()));
         Department department = departmentRepository.findById(course.getDepartment().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + course.getDepartment().getId()));
 
-        // Setting the fetched entities
         course.setTime(time);
         course.setDepartment(department);
-
         return courseRepository.save(course);
-    }
-
-    public CourseService(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
     }
 
     public List<Course> getAllCourses() {
@@ -46,9 +40,13 @@ public class CourseService {
     }
 
     public Course getCourseById(Long id) {
-        return courseRepository.findById(id).orElse(null);
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
     }
+
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + id));
+        courseRepository.delete(course);
     }
 }

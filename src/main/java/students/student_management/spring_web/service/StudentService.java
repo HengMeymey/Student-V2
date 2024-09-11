@@ -34,10 +34,12 @@ public class StudentService {
     }
 
     public Student getStudentById(Long id) {
-        return studentRepository.findById(id).orElse(null);
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
     }
 
-//    public Student saveStudent(Student student) {
+
+    //    public Student saveStudent(Student student) {
 //        return studentRepository.save(student);
 //    }
 public Student saveStudent(Student student) {

@@ -1,6 +1,8 @@
 package students.student_management.spring_web.service;
 
 import org.springframework.stereotype.Service;
+import students.student_management.spring_web.exception.ResourceNotFoundException;
+import students.student_management.spring_web.model.Department;
 import students.student_management.spring_web.model.Time;
 import students.student_management.spring_web.repository.TimeRepository;
 
@@ -35,8 +37,9 @@ public class TimeService {
 
         return timeRepository.save(existingTime); // Save the updated entity
     }
-
     public void deleteTime(Long id) {
-        timeRepository.deleteById(id);
+        Time time = timeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Time not found with id: " + id));
+        timeRepository.delete(time);
     }
 }

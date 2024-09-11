@@ -1,7 +1,11 @@
 package students.student_management.spring_web.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Teacher;
 import students.student_management.spring_web.service.TeacherService;
 
@@ -9,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/teachers")
+@Validated
 public class TeacherController {
     private final TeacherService teacherService;
 
@@ -18,23 +23,39 @@ public class TeacherController {
 
     @GetMapping
     public ResponseEntity<List<Teacher>> getAllTeachers() {
-        return ResponseEntity.ok(teacherService.getAllTeachers());
+        List<Teacher> teachers = teacherService.getAllTeachers();
+        if (teachers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(teachers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Teacher> getTeacherById(@PathVariable Long id) {
-        return ResponseEntity.ok(teacherService.getTeacherById(id));
+    public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
+        try {
+            Teacher teacher = teacherService.getTeacherById(id);
+            return ResponseEntity.ok(teacher);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Teacher> createTeacher(@RequestBody Teacher teacher) {
-        return ResponseEntity.ok(teacherService.saveTeacher(teacher));
+    public ResponseEntity<?> createTeacher(@Valid @RequestBody Teacher teacher) {
+        try {
+            Teacher savedTeacher = teacherService.saveTeacher(teacher);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedTeacher);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create teacher: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Teacher> updateTeacher(@PathVariable Long id, @RequestBody Teacher teacherDetails) {
-        Teacher existingTeacher = teacherService.getTeacherById(id);
-        if (existingTeacher != null) {
+    public ResponseEntity<?> updateTeacher(
+            @PathVariable Long id,
+            @Valid @RequestBody Teacher teacherDetails) {
+        try {
+            Teacher existingTeacher = teacherService.getTeacherById(id);
             existingTeacher.setName(teacherDetails.getName());
             existingTeacher.setContact(teacherDetails.getContact());
             existingTeacher.setHireDate(teacherDetails.getHireDate());
@@ -44,14 +65,20 @@ public class TeacherController {
 
             Teacher updatedTeacher = teacherService.saveTeacher(existingTeacher);
             return ResponseEntity.ok(updatedTeacher);
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update teacher: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTeacher(@PathVariable Long id) {
-        teacherService.deleteTeacher(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteTeacher(@PathVariable Long id) {
+        try {
+            teacherService.deleteTeacher(id);
+            return ResponseEntity.status(HttpStatus.OK).body("Teacher deleted successfully.");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

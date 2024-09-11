@@ -21,7 +21,8 @@ public class DepartmentService {
     }
 
     public Department getDepartmentById(Long id) {
-        return departmentRepository.findById(id).orElse(null);
+        return departmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
     }
 
     public Department saveDepartment(Department department) {
@@ -36,6 +37,8 @@ public class DepartmentService {
     }
 
     public void deleteDepartment(Long id) {
-        departmentRepository.deleteById(id);
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
+        departmentRepository.delete(department);
     }
 }

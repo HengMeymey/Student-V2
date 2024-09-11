@@ -1,7 +1,10 @@
 package students.student_management.spring_web.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Course;
@@ -13,11 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/classes")
+@Validated
 public class ClassController {
 
-    @Autowired
     private final CourseRepository courseRepository;
-
     private final ClassService classService;
 
     public ClassController(CourseRepository courseRepository, ClassService classService) {
@@ -27,46 +29,63 @@ public class ClassController {
 
     @GetMapping
     public ResponseEntity<List<Class>> getAllClasses() {
-        return ResponseEntity.ok(classService.getAllClasses());
+        List<Class> classes = classService.getAllClasses();
+        if (classes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(classes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Class> getClassById(@PathVariable Long id) {
-        return ResponseEntity.ok(classService.getClassById(id));
+    public ResponseEntity<?> getClassById(@PathVariable Long id) {
+        try {
+            Class classEntity = classService.getClassById(id);
+            return ResponseEntity.ok(classEntity);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Class> createClass(@RequestBody Class classEntity) {
-        Course course = courseRepository.findById(classEntity.getCourse().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+    public ResponseEntity<?> createClass(@Valid @RequestBody Class classEntity) {
+        try {
+            Course course = courseRepository.findById(classEntity.getCourse().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + classEntity.getCourse().getId()));
 
-        classEntity.setCourse(course);
-
-        Class savedClass = classService.saveClass(classEntity);
-        return ResponseEntity.ok(savedClass);
+            classEntity.setCourse(course);
+            Class savedClass = classService.saveClass(classEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedClass);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Class> updateClass(@PathVariable Long id, @RequestBody Class classDetails) {
-        Class existingClass = classService.getClassById(id);
-        existingClass.setName(classDetails.getName());
+    public ResponseEntity<?> updateClass(@PathVariable Long id, @Valid @RequestBody Class classDetails) {
+        try {
+            Class existingClass = classService.getClassById(id);
+            existingClass.setName(classDetails.getName());
 
-        Course course = courseRepository.findById(classDetails.getCourse().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        existingClass.setCourse(course);
+            Course course = courseRepository.findById(classDetails.getCourse().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course not found with id: " + classDetails.getCourse().getId()));
 
-        Class updatedClass = classService.saveClass(existingClass);
-        return ResponseEntity.ok(updatedClass);
+            existingClass.setCourse(course);
+            Class updatedClass = classService.saveClass(existingClass);
+            return ResponseEntity.ok(updatedClass);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update class: " + e.getMessage());
+        }
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClass(@PathVariable Long id) {
+    public ResponseEntity<?> deleteClass(@PathVariable Long id) {
         try {
             classService.deleteClass(id);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok("Class deleted successfully.");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

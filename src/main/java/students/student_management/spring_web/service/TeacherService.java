@@ -1,6 +1,7 @@
 package students.student_management.spring_web.service;
 
 import org.springframework.stereotype.Service;
+import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;
 import students.student_management.spring_web.model.Teacher;
 import students.student_management.spring_web.repository.DepartmentRepository;
@@ -23,19 +24,22 @@ public class TeacherService {
     }
 
     public Teacher getTeacherById(Long id) {
-        return teacherRepository.findById(id).orElse(null);
+        return teacherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
     }
 
     public Teacher saveTeacher(Teacher teacher) {
-        // Fetch the Department object from the repository using the ID provided
         if (teacher.getDepartment() != null && teacher.getDepartment().getId() != null) {
-            Department department = departmentRepository.findById(teacher.getDepartment().getId()).orElse(null);
-            teacher.setDepartment(department); // Set the fetched Department object
+            Department department = departmentRepository.findById(teacher.getDepartment().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + teacher.getDepartment().getId()));
+            teacher.setDepartment(department);
         }
         return teacherRepository.save(teacher);
     }
 
     public void deleteTeacher(Long id) {
-        teacherRepository.deleteById(id);
+        Teacher teacher = teacherRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
+        teacherRepository.delete(teacher);
     }
 }
