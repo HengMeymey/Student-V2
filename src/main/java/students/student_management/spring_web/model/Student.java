@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +26,13 @@ public class Student {
     @Column(nullable = false, length = 60)
     private String name;
 
-    @NotBlank(message = "Contact is mandatory")
-    @Size(max = 30, message = "Contact cannot exceed 30 characters")
-    @Column(nullable = false, unique = true, length = 30)
+//    @NotBlank(message = "Contact is mandatory")
+//    @Size(max = 30, message = "Contact cannot exceed 30 characters")
+//    @Column(nullable = false, unique = true, length = 30)
+//    private String contact;
+
+//    @Pattern(regexp = "^[0-9]{5,15}$", message = "Contact number must be between 5 to 15 digits")
+    @NotNull(message = "Phone number cannot be null")
     private String contact;
 
     @NotNull(message = "Date of birth is mandatory")

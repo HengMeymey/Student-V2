@@ -57,7 +57,7 @@ public class TeacherController {
         try {
             Teacher existingTeacher = teacherService.getTeacherById(id);
             existingTeacher.setName(teacherDetails.getName());
-            existingTeacher.setContact(teacherDetails.getContact());
+            existingTeacher.setEmail(teacherDetails.getEmail());
             existingTeacher.setHireDate(teacherDetails.getHireDate());
             existingTeacher.setSubjectSpecialization(teacherDetails.getSubjectSpecialization());
             existingTeacher.setIsEmployed(teacherDetails.getIsEmployed());

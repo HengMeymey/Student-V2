@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        System.out.println("Validation Errors: " + errors);
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 

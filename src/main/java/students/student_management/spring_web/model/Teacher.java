@@ -1,6 +1,7 @@
 package students.student_management.spring_web.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -20,9 +21,10 @@ public class Teacher {
     @NotBlank(message = "Teacher name cannot be blank")
     private String name;
 
-    @Column(nullable = false, unique = true, length = 30)
-    @NotBlank(message = "Contact cannot be blank")
-    private String contact;
+    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email should be valid")
+    private String email;
 
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)

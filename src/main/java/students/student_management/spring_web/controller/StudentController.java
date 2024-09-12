@@ -40,14 +40,20 @@ public class StudentController {
         }
     }
 
+//    @PostMapping
+//    public ResponseEntity<?> createStudent(@Valid @RequestBody Student student) {
+//        try {
+//            Student createdStudent = studentService.saveStudent(student);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create student.");
+//        }
+//    }
+
     @PostMapping
-    public ResponseEntity<?> createStudent(@Valid @RequestBody Student student) {
-        try {
-            Student createdStudent = studentService.saveStudent(student);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create student.");
-        }
+    public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) {
+        Student savedStudent = studentService.saveStudent(student);
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
