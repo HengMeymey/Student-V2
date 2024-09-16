@@ -1,5 +1,6 @@
 package students.student_management.spring_web.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;
@@ -29,11 +30,17 @@ public class TeacherService {
     }
 
     public Teacher saveTeacher(Teacher teacher) {
+        // Check for duplicate email
+        if (teacherRepository.existsByEmail(teacher.getEmail())) {
+            throw new IllegalArgumentException("Email already exists: " + teacher.getEmail());
+        }
+
         if (teacher.getDepartment() != null && teacher.getDepartment().getId() != null) {
             Department department = departmentRepository.findById(teacher.getDepartment().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + teacher.getDepartment().getId()));
             teacher.setDepartment(department);
         }
+
         return teacherRepository.save(teacher);
     }
 

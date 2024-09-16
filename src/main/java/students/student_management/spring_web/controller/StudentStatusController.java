@@ -7,10 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
+import students.student_management.spring_web.model.Department;
 import students.student_management.spring_web.model.StudentStatus;
 import students.student_management.spring_web.service.StudentStatusService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/student-statuses")
@@ -34,45 +37,63 @@ public class StudentStatusController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getStudentStatusById(@PathVariable Long id) {
-        try {
             StudentStatus studentStatus = studentStatusService.getStudentStatusById(id);
-            return ResponseEntity.ok(studentStatus);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        if (studentStatus == null) {
+            throw new ResourceNotFoundException("Student Status not found with id: " + id);
         }
+            return ResponseEntity.ok(studentStatus);
     }
 
     @PostMapping
-    public ResponseEntity<?> createStudentStatus(@Valid @RequestBody StudentStatus studentStatus) {
+    public ResponseEntity<Map<String, Object>> createStudentStatus(@Valid @RequestBody StudentStatus studentStatus) {
         try {
             StudentStatus savedStatus = studentStatusService.saveStudentStatus(studentStatus);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedStatus);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Student Status created successfully!");
+            response.put("status", savedStatus);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create student status: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to create student status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudentStatus(
-            @PathVariable Long id,
-            @Valid @RequestBody StudentStatus updatedStatus) {
+    public ResponseEntity<Map<String, Object>> updateStudentStatus(@PathVariable Long id, @Valid @RequestBody StudentStatus updatedStatus) {
         try {
             StudentStatus studentStatus = studentStatusService.updateStudentStatus(id, updatedStatus);
-            return ResponseEntity.ok(studentStatus);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Student Status updated successfully!");
+            response.put("status", studentStatus);
+
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update student status: " + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to update student status: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudentStatus(@PathVariable Long id) {
-        try {
-            studentStatusService.deleteStudentStatus(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Student status deleted successfully.");
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    public ResponseEntity<Map<String, String>> deleteStudentStatus(@PathVariable Long id) {
+        StudentStatus studentStatus = studentStatusService.getStudentStatusById(id);
+
+        if (studentStatus == null) {
+            throw new ResourceNotFoundException("Student Status not found with id: " + id);
         }
+        studentStatusService.deleteStudentStatus(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Student Status has been deleted successfully !!");
+
+        return ResponseEntity.ok(response);
     }
+
 }

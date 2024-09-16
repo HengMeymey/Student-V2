@@ -29,14 +29,16 @@ public class TimeService {
     }
 
     public Time updateTime(Long id, Time time) {
-        Time existingTime = getTimeById(id); // Fetch the existing time entity
+        Time existingTime = timeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Time not found with id: " + id));
 
         existingTime.setName(time.getName());
         existingTime.setStartTime(time.getStartTime());
         existingTime.setEndTime(time.getEndTime());
 
-        return timeRepository.save(existingTime); // Save the updated entity
+        return timeRepository.save(existingTime);
     }
+
     public void deleteTime(Long id) {
         Time time = timeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Time not found with id: " + id));

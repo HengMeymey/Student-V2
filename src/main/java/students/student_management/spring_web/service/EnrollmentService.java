@@ -2,6 +2,7 @@ package students.student_management.spring_web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import students.student_management.spring_web.dto.StudentEnrollmentDTO;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Enrollment;
 import students.student_management.spring_web.model.Student;
@@ -12,6 +13,7 @@ import students.student_management.spring_web.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EnrollmentService {
@@ -75,5 +77,25 @@ public class EnrollmentService {
             throw new ResourceNotFoundException("Enrollment not found with ID: " + id);
         }
         enrollmentRepository.deleteById(id);
+    }
+
+    public List<StudentEnrollmentDTO> getAllStudentEnrollments() {
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+
+        return enrollments.stream().map(enrollment -> new StudentEnrollmentDTO(
+                enrollment.getStudent().getId(),
+                enrollment.getStudent().getName(),
+                enrollment.getStudent().getContact(),
+                enrollment.getStudent().getDob(),
+                enrollment.getStudent().getGender(),
+                enrollment.getStudent().getStudentStatus().getName(),
+                enrollment.getStudent().getDepartment().getName(),
+                enrollment.getCourseClass().getName(),
+                enrollment.getCourseClass().getCourse().getName(),
+                enrollment.getCourseClass().getCourse().getTime().getStartTime(),
+                enrollment.getCourseClass().getCourse().getTime().getEndTime(),
+                enrollment.getEnrollmentDate(),
+                enrollment.getYear()
+        )).collect(Collectors.toList());
     }
 }

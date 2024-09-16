@@ -4,5 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import students.student_management.spring_web.model.Teacher;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
+    boolean existsByEmail(String email);
 }
 

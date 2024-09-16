@@ -33,6 +33,7 @@ public class Student {
 
 //    @Pattern(regexp = "^[0-9]{5,15}$", message = "Contact number must be between 5 to 15 digits")
     @NotNull(message = "Phone number cannot be null")
+    @Column(nullable = false, unique = true)
     private String contact;
 
     @NotNull(message = "Date of birth is mandatory")

@@ -9,7 +9,9 @@ import students.student_management.spring_web.exception.ResourceNotFoundExceptio
 import students.student_management.spring_web.model.Course;
 import students.student_management.spring_web.service.CourseService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -36,7 +38,7 @@ public class CourseController {
             Course course = courseService.getCourseById(id);
             return ResponseEntity.ok(course);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         }
     }
 
@@ -44,9 +46,9 @@ public class CourseController {
     public ResponseEntity<?> createCourse(@Valid @RequestBody Course course) {
         try {
             Course savedCourse = courseService.saveCourse(course);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedCourse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse("Course created successfully.", savedCourse));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create course: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to create course: " + e.getMessage()));
         }
     }
 
@@ -59,11 +61,11 @@ public class CourseController {
             existingCourse.setDepartment(courseDetails.getDepartment());
 
             Course updatedCourse = courseService.saveCourse(existingCourse);
-            return ResponseEntity.ok(updatedCourse);
+            return ResponseEntity.ok(createSuccessResponse("Course updated successfully.", updatedCourse));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update course: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to update course: " + e.getMessage()));
         }
     }
 
@@ -71,9 +73,26 @@ public class CourseController {
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         try {
             courseService.deleteCourse(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.");
+            return ResponseEntity.ok(createSuccessResponse("Course deleted successfully.", null));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         }
+    }
+
+    // Helper method to create success response
+    private Map<String, Object> createSuccessResponse(String message, Course course) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
+        if (course != null) {
+            response.put("course", course);
+        }
+        return response;
+    }
+
+    // Helper method to create error response
+    private Map<String, String> createErrorResponse(String message) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", message);
+        return errorResponse;
     }
 }

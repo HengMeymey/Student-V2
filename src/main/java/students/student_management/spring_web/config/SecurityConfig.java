@@ -33,9 +33,9 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                        .requestMatchers("/auth/login", "/auth/create").permitAll()  // Allow login and user creation
-                        .requestMatchers("/home").permitAll()
-                        .anyRequest().authenticated()  // All other requests require authentication
+                        .requestMatchers("/auth/create").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .anyRequest().permitAll()  // All other requests require authentication
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(jwtAuthenticationEntryPoint))  // Handle authentication errors
@@ -47,7 +47,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

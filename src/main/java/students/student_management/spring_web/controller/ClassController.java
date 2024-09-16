@@ -1,18 +1,19 @@
 package students.student_management.spring_web.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
+import students.student_management.spring_web.model.Class;
 import students.student_management.spring_web.model.Course;
 import students.student_management.spring_web.repository.CourseRepository;
 import students.student_management.spring_web.service.ClassService;
-import students.student_management.spring_web.model.Class;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/classes")
@@ -42,7 +43,7 @@ public class ClassController {
             Class classEntity = classService.getClassById(id);
             return ResponseEntity.ok(classEntity);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         }
     }
 
@@ -54,9 +55,11 @@ public class ClassController {
 
             classEntity.setCourse(course);
             Class savedClass = classService.saveClass(classEntity);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedClass);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse("Class created successfully.", savedClass));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to create class: " + e.getMessage()));
         }
     }
 
@@ -71,11 +74,11 @@ public class ClassController {
 
             existingClass.setCourse(course);
             Class updatedClass = classService.saveClass(existingClass);
-            return ResponseEntity.ok(updatedClass);
+            return ResponseEntity.ok(createSuccessResponse("Class updated successfully.", updatedClass));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update class: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to update class: " + e.getMessage()));
         }
     }
 
@@ -83,9 +86,26 @@ public class ClassController {
     public ResponseEntity<?> deleteClass(@PathVariable Long id) {
         try {
             classService.deleteClass(id);
-            return ResponseEntity.ok("Class deleted successfully.");
+            return ResponseEntity.ok(createSuccessResponse("Class deleted successfully.", null));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
         }
+    }
+
+    // Helper method to create success response
+    private Map<String, Object> createSuccessResponse(String message, Class classEntity) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
+        if (classEntity != null) {
+            response.put("class", classEntity);
+        }
+        return response;
+    }
+
+    // Helper method to create error response
+    private Map<String, String> createErrorResponse(String message) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", message);
+        return errorResponse;
     }
 }
