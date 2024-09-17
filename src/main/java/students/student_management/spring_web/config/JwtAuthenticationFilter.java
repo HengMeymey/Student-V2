@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
         final String authorizationHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
 
@@ -39,9 +40,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = authorizationHeader.substring(7);
             try {
-                // Validate and extract claims
                 String username = jwtUtil.extractUsername(jwt);
-                // Continue with authentication logic
+                // Load user details from the database
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                // If userDetails is not null and token is valid, set the authentication
+                if (userDetails != null && jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             } catch (Exception e) {
                 // Handle error, e.g., return unauthorized response
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

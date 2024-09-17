@@ -11,25 +11,31 @@ import students.student_management.spring_web.model.MyUserDetails;
 import students.student_management.spring_web.model.User;
 import students.student_management.spring_web.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
+    private final UserRepository userRepository; // Your repository to fetch user data
+
     @Autowired
-    private UserRepository userRepository; // Inject your UserRepository
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Retrieve the user using Optional
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        // Fetch the user from the database
+        Optional<User> optionalUser = userRepository.findByUsername(username);
 
-        // Handle the case where the user is not found
-        User user = userOptional.orElseThrow(() ->
-                new UsernameNotFoundException("User not found with username: " + username));
+        // Retrieve the user or throw an exception if not found
+        User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // Return the custom MyUserDetails object
-        return new MyUserDetails(user);
+        // Return a UserDetails object
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                new ArrayList<>());
     }
-
 }

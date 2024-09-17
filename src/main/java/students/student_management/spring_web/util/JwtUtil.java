@@ -14,13 +14,13 @@ import java.util.Map;
 @Component
 public class JwtUtil {
     private final String SECRET_KEY = "c/B7UWZSa2zA+pWj2EieChFmxyEiqPHhA70KOt0Jla0=";
-    private long validity = 1000 * 60 * 60;
+    private long validity = 1000 * 60 * 60; // 1 hour
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername()) // Use userDetails.getUsername() here
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + validity))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -33,11 +33,7 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractAllClaims(token).getExpiration().before(new Date()); // Check expiration date
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaims(token).getExpiration();
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 
     public Claims extractAllClaims(String token) {
@@ -47,11 +43,7 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    private Claims extractClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-    }
-
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject(); // Extracts the username from the token
+        return extractAllClaims(token).getSubject();
     }
 }
