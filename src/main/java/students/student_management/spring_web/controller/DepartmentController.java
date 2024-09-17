@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;
+import students.student_management.spring_web.model.Student;
 import students.student_management.spring_web.model.StudentStatus;
+import students.student_management.spring_web.model.Teacher;
 import students.student_management.spring_web.service.DepartmentExcelExportService;
 import students.student_management.spring_web.service.DepartmentService;
 
@@ -40,6 +42,44 @@ public class DepartmentController {
             throw new ResourceNotFoundException("Department not found with id: " + id);
         }
         return ResponseEntity.ok(department);
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<List<Student>> getAllStudents() {
+        List<Student> students = departmentService.getAllStudents();
+        if (students.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(students);
+    }
+
+    // Endpoint to get all teachers from all departments
+    @GetMapping("/teachers")
+    public ResponseEntity<List<Teacher>> getAllTeachers() {
+        List<Teacher> teachers = departmentService.getAllTeachers();
+        if (teachers.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(teachers);
+    }
+
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<Student>> getStudentsByDepartmentId(@PathVariable Long id) {
+        List<Student> students = departmentService.getStudentsByDepartmentId(id);
+        if (students.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(students);
+    }
+
+    // Endpoint to get teachers of a specific department
+    @GetMapping("/{id}/teachers")
+    public ResponseEntity<List<Teacher>> getTeachersByDepartmentId(@PathVariable Long id) {
+        List<Teacher> teachers = departmentService.getTeachersByDepartmentId(id);
+        if (teachers.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(teachers);
     }
 
     @PostMapping

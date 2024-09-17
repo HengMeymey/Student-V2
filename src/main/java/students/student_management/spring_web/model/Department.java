@@ -29,4 +29,8 @@ public class Department {
     @OneToMany(mappedBy = "department")
     @JsonBackReference
     private List<Student> students;
+
+    @OneToMany(mappedBy = "department")
+    @JsonBackReference
+    private List<Teacher> teachers;
 }

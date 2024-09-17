@@ -26,12 +26,6 @@ public class Student {
     @Column(nullable = false, length = 60)
     private String name;
 
-//    @NotBlank(message = "Contact is mandatory")
-//    @Size(max = 30, message = "Contact cannot exceed 30 characters")
-//    @Column(nullable = false, unique = true, length = 30)
-//    private String contact;
-
-//    @Pattern(regexp = "^[0-9]{5,15}$", message = "Contact number must be between 5 to 15 digits")
     @NotNull(message = "Phone number cannot be null")
     @Column(nullable = false, unique = true)
     private String contact;
