@@ -1,5 +1,6 @@
 package students.student_management.spring_web.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -39,8 +40,9 @@ public class Teacher {
     @NotNull(message = "Employment status cannot be null")
     private Boolean isEmployed;
 
+    @NotNull(message = "Department cannot be null")
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
-    @NotNull(message = "Department cannot be null")
+//    @JsonManagedReference(value = "department-teachers")
     private Department department;
 }

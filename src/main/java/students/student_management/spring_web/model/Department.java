@@ -1,6 +1,8 @@
 package students.student_management.spring_web.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,11 +28,11 @@ public class Department {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @OneToMany(mappedBy = "department")
-    @JsonBackReference
-    private List<Student> students;
-
-    @OneToMany(mappedBy = "department")
-    @JsonBackReference
-    private List<Teacher> teachers;
+//    @OneToMany(mappedBy = "department")
+//    @JsonManagedReference(value = "department-students")
+//    private List<Student> students;
+//
+//    @OneToMany(mappedBy = "department")
+//    @JsonManagedReference(value = "department-teachers")
+//    private List<Teacher> teachers;
 }
