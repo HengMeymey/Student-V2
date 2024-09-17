@@ -46,6 +46,5 @@ public class Student {
     @NotNull(message = "Department is mandatory")
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
-//    @JsonManagedReference(value = "department-students")
     private Department department;
 }

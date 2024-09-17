@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import students.student_management.spring_web.dto.StudentEnrollmentDTO;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
+import students.student_management.spring_web.model.Course;
 import students.student_management.spring_web.model.Enrollment;
 import students.student_management.spring_web.model.Student;
 import students.student_management.spring_web.model.Class;
@@ -48,6 +49,11 @@ public class EnrollmentService {
 
     public List<Enrollment> getAllEnrollments() {
         return enrollmentRepository.findAll();
+    }
+
+    public Enrollment getEnrollmentById(Long id) {
+        return enrollmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with id: " + id));
     }
 
     public Enrollment updateEnrollment(Long id, Enrollment updatedEnrollment) {

@@ -23,7 +23,6 @@ public class ThirdPartyApiService {
 
     public PhoneVerificationResponse verifyPhoneNumber(String phoneNumber) {
         String url = apiUrl + "?access_key=" + apiKey + "&number=" + phoneNumber;
-        System.out.println("Calling API: " + url);
 
         try {
             ResponseEntity<PhoneVerificationResponse> response = restTemplate.getForEntity(url, PhoneVerificationResponse.class);

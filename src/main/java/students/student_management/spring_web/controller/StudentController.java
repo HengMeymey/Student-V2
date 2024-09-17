@@ -24,47 +24,64 @@ public class StudentController {
         this.studentService = studentService;
         this.studentRepository = studentRepository; // Initialize the repository
     }
+
     @GetMapping
-    public ResponseEntity<?> getAllStudents() {
+    public ResponseEntity<Map<String, Object>> getAllStudents() {
+        Map<String, Object> response = new HashMap<>();
         try {
             List<Student> students = studentService.getAllStudents();
-            return ResponseEntity.ok(students);
+
+            if (students.isEmpty()) {
+                response.put("message", "No student to display");
+                response.put("status", "SUCCESS");
+                response.put("data", students);
+                return ResponseEntity.ok(response);
+            }
+
+            response.put("message", "Students retrieved successfully.");
+            response.put("status", "SUCCESS");
+            response.put("data", students);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to retrieve students.");
+            response.put("message", "Failed to retrieve students.");
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getStudentById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Student student = studentService.getStudentById(id);
-            Map<String, Object> response = new HashMap<>();
             response.put("message", "Student retrieved successfully.");
-            response.put("student", student);
+            response.put("status", "SUCCESS");
+            response.put("data", student);
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to retrieve student: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            response.put("message", "Failed to retrieve student: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createStudent(@Valid @RequestBody Student student) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Student createdStudent = studentService.saveStudent(student);
-            Map<String, Object> response = new HashMap<>();
             response.put("message", "Student created successfully!");
-            response.put("student", createdStudent);
+            response.put("status", "SUCCESS");
+            response.put("data", createdStudent);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to create student: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            response.put("message", "Failed to create student: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
@@ -72,43 +89,44 @@ public class StudentController {
     public ResponseEntity<Map<String, Object>> updateStudent(
             @PathVariable Long id,
             @Valid @RequestBody Student updatedStudent) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Student student = studentService.updateStudent(id, updatedStudent);
-            Map<String, Object> response = new HashMap<>();
             response.put("message", "Student updated successfully!");
-            response.put("student", student);
+            response.put("status", "SUCCESS");
+            response.put("data", student);
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to update student: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            response.put("message", "Failed to update student: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteStudent(@PathVariable Long id) {
+        Map<String, String> response = new HashMap<>();
         try {
-            // Check if the student exists before attempting to delete
             if (!studentRepository.existsById(id)) {
                 throw new ResourceNotFoundException("Student not found with id: " + id);
             }
 
             studentService.deleteStudent(id);
-            Map<String, String> response = new HashMap<>();
             response.put("message", "Student deleted successfully.");
+            response.put("status", "SUCCESS");
             return ResponseEntity.ok(response); // 200 OK
         } catch (ResourceNotFoundException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse); // 404 Not Found
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response); // 404 Not Found
         } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to delete student: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse); // 500 Internal Server Error
+            response.put("message", "Failed to delete student: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 500 Internal Server Error
         }
     }
 }

@@ -32,74 +32,96 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createEnrollment(@Valid @RequestBody Enrollment enrollment) {
-        Enrollment savedEnrollment = enrollmentService.saveEnrollment(enrollment);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse("Enrollment created successfully.", savedEnrollment));
-    }
-
     @GetMapping
-    public ResponseEntity<List<Enrollment>> getAllEnrollments() {
+    public ResponseEntity<Map<String, Object>> getAllEnrollments() {
+        Map<String, Object> response = new HashMap<>();
         List<Enrollment> enrollments = enrollmentService.getAllEnrollments();
-        return ResponseEntity.ok(enrollments); // 200 OK
+
+        if (enrollments.isEmpty()) {
+            response.put("message", "No enrollment to display");
+            response.put("status", "SUCCESS");
+            response.put("data", enrollments);
+            return ResponseEntity.ok(response);
+        }
+
+        response.put("message", "Enrollments retrieved successfully.");
+        response.put("status", "SUCCESS");
+        response.put("data", enrollments);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEnrollmentById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getEnrollmentById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            Enrollment enrollment = enrollmentService.getAllEnrollments().stream()
-                    .filter(e -> e.getId().equals(id))
-                    .findFirst()
-                    .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with ID: " + id));
-            return ResponseEntity.ok(enrollment); // 200 OK
+            Enrollment enrollment = enrollmentService.getEnrollmentById(id);
+            response.put("message", "Enrollment retrieved successfully.");
+            response.put("status", "SUCCESS");
+            response.put("data", enrollment);
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage())); // 404 Not Found
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createEnrollment(@Valid @RequestBody Enrollment enrollment) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Enrollment savedEnrollment = enrollmentService.saveEnrollment(enrollment);
+            response.put("message", "Enrollment created successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", savedEnrollment);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            response.put("message", "Failed to create enrollment: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEnrollment(@PathVariable Long id, @Valid @RequestBody Enrollment updatedEnrollment) {
+    public ResponseEntity<Map<String, Object>> updateEnrollment(@PathVariable Long id, @Valid @RequestBody Enrollment updatedEnrollment) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            Enrollment enrollment = enrollmentService.updateEnrollment(id, updatedEnrollment);
-            return ResponseEntity.ok(createSuccessResponse("Enrollment updated successfully.", enrollment)); // 200 OK
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(ex.getMessage())); // 404 Not Found
+            Enrollment existingEnrollment = enrollmentService.getEnrollmentById(id);
+            existingEnrollment.setStudent(updatedEnrollment.getStudent());
+            existingEnrollment.setCourseClass(updatedEnrollment.getCourseClass());
+            existingEnrollment.setEnrollmentDate(updatedEnrollment.getEnrollmentDate());
+            existingEnrollment.setYear(updatedEnrollment.getYear());
+
+            Enrollment updateEnrollment = enrollmentService.saveEnrollment(updatedEnrollment);
+            response.put("message", "Enrollment updated successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", updateEnrollment);
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            response.put("message", "Failed to update enrollment: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEnrollment(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> deleteEnrollment(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             enrollmentService.deleteEnrollment(id);
-            return ResponseEntity.ok(createSuccessResponse("Enrollment deleted successfully.", null)); // 200 OK
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(ex.getMessage())); // 404 Not Found
+            response.put("message", "Enrollment deleted successfully.");
+            response.put("status", "SUCCESS");
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
-
-    // Helper method to create success response
-    private Map<String, Object> createSuccessResponse(String message, Enrollment enrollment) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", message);
-        if (enrollment != null) {
-            response.put("enrollment", enrollment);
-        }
-        return response;
-    }
-
-    // Helper method to create error response
-    private Map<String, String> createErrorResponse(String message) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", message);
-        return errorResponse;
-    }
-
-    @GetMapping("/students")
-    public ResponseEntity<List<StudentEnrollmentDTO>> getAllStudentEnrollments() {
-        List<StudentEnrollmentDTO> studentEnrollments = enrollmentService.getAllStudentEnrollments();
-        return ResponseEntity.ok(studentEnrollments); // 200 OK
-    }
-
     @GetMapping("/students/export/excel")
     public ResponseEntity<byte[]> exportToExcel(HttpServletResponse response) throws IOException {
         List<StudentEnrollmentDTO> enrollments = enrollmentService.getAllStudentEnrollments();

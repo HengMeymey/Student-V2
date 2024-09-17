@@ -31,56 +31,49 @@ public class DepartmentController {
         this.excelExportService = excelExportService; // Add this line
     }
     @GetMapping
-    public ResponseEntity<List<Department>> getAllDepartments() {
-        return ResponseEntity.ok(departmentService.getAllDepartments());
+    public ResponseEntity<Map<String, Object>> getAllDepartments() {
+        try {
+            List<Department> departments = departmentService.getAllDepartments();
+            Map<String, Object> response = new HashMap<>();
+
+            if (departments.isEmpty()) {
+                response.put("message", "No department to display");
+                response.put("status", "SUCCESS");
+                response.put("data", departments);
+                return ResponseEntity.ok(response);
+            }
+
+            response.put("message", "Departments fetched successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", departments);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to fetch departments: " + e.getMessage());
+            errorResponse.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDepartmentById(@PathVariable Long id) {
-        Department department = departmentService.getDepartmentById(id);
-        if (department == null) {
-            throw new ResourceNotFoundException("Department not found with id: " + id);
+    public ResponseEntity<Map<String, Object>> getDepartmentById(@PathVariable Long id) {
+        try {
+            Department department = departmentService.getDepartmentById(id);
+            if (department == null) {
+                throw new ResourceNotFoundException("Department not found with id: " + id);
+            }
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Department fetched successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", department);
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-        return ResponseEntity.ok(department);
     }
-
-//    @GetMapping("/students")
-//    public ResponseEntity<List<Student>> getAllStudents() {
-//        List<Student> students = departmentService.getAllStudents();
-//        if (students.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(students);
-//    }
-//
-//    // Endpoint to get all teachers from all departments
-//    @GetMapping("/teachers")
-//    public ResponseEntity<List<Teacher>> getAllTeachers() {
-//        List<Teacher> teachers = departmentService.getAllTeachers();
-//        if (teachers.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(teachers);
-//    }
-//
-//    @GetMapping("/{id}/students")
-//    public ResponseEntity<List<Student>> getStudentsByDepartmentId(@PathVariable Long id) {
-//        List<Student> students = departmentService.getStudentsByDepartmentId(id);
-//        if (students.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(students);
-//    }
-//
-//    // Endpoint to get teachers of a specific department
-//    @GetMapping("/{id}/teachers")
-//    public ResponseEntity<List<Teacher>> getTeachersByDepartmentId(@PathVariable Long id) {
-//        List<Teacher> teachers = departmentService.getTeachersByDepartmentId(id);
-//        if (teachers.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(teachers);
-//    }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createDepartment(@Valid @RequestBody Department department) {
@@ -89,21 +82,17 @@ public class DepartmentController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Department has been created successfully!");
-            response.put("status", createdDepartment);
+            response.put("status", "SUCCESS");
+            response.put("data", createdDepartment);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to create department: " + e.getMessage());
+            errorResponse.put("status","FAIL");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @Valid @RequestBody Department department) {
-//        Department updatedDepartment = departmentService.updateDepartment(id, department);
-//        return ResponseEntity.ok(updatedDepartment);
-//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateDepartment(@PathVariable Long id, @Valid @RequestBody Department department) {
@@ -111,32 +100,45 @@ public class DepartmentController {
             Department updatedDepartment = departmentService.updateDepartment(id, department);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Department has been updated successfully!");
-            response.put("status", updatedDepartment);
-
+            response.put("status", "SUCCESS");
+            response.put("data", updatedDepartment);
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Failed to department: " + e.getMessage());
+            errorResponse.put("message", "Failed to update department: " + e.getMessage());
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
-        Department department = departmentService.getDepartmentById(id);
-        if (department == null) {
-            throw new ResourceNotFoundException("Department not found with id: " + id);
+    public ResponseEntity<Map<String, Object>> deleteDepartment(@PathVariable Long id) {
+        try {
+            Department department = departmentService.getDepartmentById(id);
+            if (department == null) {
+                throw new ResourceNotFoundException("Department not found with id: " + id);
+            }
+            departmentService.deleteDepartment(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Department has been deleted successfully!");
+            response.put("status", "SUCCESS");
+            return ResponseEntity.ok(response);
+        } catch (ResourceNotFoundException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to delete department: " + e.getMessage());
+            errorResponse.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-        departmentService.deleteDepartment(id);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Department has been deleted successfully !!");
-
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/export/excel")

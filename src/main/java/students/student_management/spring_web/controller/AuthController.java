@@ -33,3 +33,4 @@ public class AuthController {
         return authService.login(authRequest);
     }
 }
+

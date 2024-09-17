@@ -24,36 +24,58 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
+    public ResponseEntity<Map<String, Object>> getAllCourses() {
+        Map<String, Object> response = new HashMap<>();
         List<Course> courses = courseService.getAllCourses();
+
         if (courses.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            response.put("message", "No course to display");
+            response.put("status", "SUCCESS");
+            response.put("data", courses);
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.ok(courses);
+
+        response.put("message", "Courses retrieved successfully.");
+        response.put("status", "SUCCESS");
+        response.put("data", courses);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getCourseById(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Course course = courseService.getCourseById(id);
-            return ResponseEntity.ok(course);
+            response.put("message", "Course retrieved successfully.");
+            response.put("status", "SUCCESS");
+            response.put("data", course);
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> createCourse(@Valid @RequestBody Course course) {
+    public ResponseEntity<Map<String, Object>> createCourse(@Valid @RequestBody Course course) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Course savedCourse = courseService.saveCourse(course);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createSuccessResponse("Course created successfully.", savedCourse));
+            response.put("message", "Course created successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", savedCourse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to create course: " + e.getMessage()));
+            response.put("message", "Failed to create course: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCourse(@PathVariable Long id, @Valid @RequestBody Course courseDetails) {
+    public ResponseEntity<Map<String, Object>> updateCourse(@PathVariable Long id, @Valid @RequestBody Course courseDetails) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Course existingCourse = courseService.getCourseById(id);
             existingCourse.setName(courseDetails.getName());
@@ -61,38 +83,33 @@ public class CourseController {
             existingCourse.setDepartment(courseDetails.getDepartment());
 
             Course updatedCourse = courseService.saveCourse(existingCourse);
-            return ResponseEntity.ok(createSuccessResponse("Course updated successfully.", updatedCourse));
+            response.put("message", "Course updated successfully!");
+            response.put("status", "SUCCESS");
+            response.put("data", updatedCourse);
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createErrorResponse("Failed to update course: " + e.getMessage()));
+            response.put("message", "Failed to update course: " + e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> deleteCourse(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
         try {
             courseService.deleteCourse(id);
-            return ResponseEntity.ok(createSuccessResponse("Course deleted successfully.", null));
+            response.put("message", "Course deleted successfully.");
+            response.put("status", "SUCCESS");
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createErrorResponse(e.getMessage()));
+            response.put("message", e.getMessage());
+            response.put("status", "FAIL");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-    }
-
-    // Helper method to create success response
-    private Map<String, Object> createSuccessResponse(String message, Course course) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", message);
-        if (course != null) {
-            response.put("course", course);
-        }
-        return response;
-    }
-
-    // Helper method to create error response
-    private Map<String, String> createErrorResponse(String message) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", message);
-        return errorResponse;
     }
 }

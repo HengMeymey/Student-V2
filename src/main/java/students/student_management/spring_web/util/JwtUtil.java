@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "c/B7UWZSa2zA+pWj2EieChFmxyEiqPHhA70KOt0Jla0="; // Change to a strong secret key
+    private final String SECRET_KEY = "c/B7UWZSa2zA+pWj2EieChFmxyEiqPHhA70KOt0Jla0=";
     private long validity = 1000 * 60 * 60;
 
     public String generateToken(UserDetails userDetails) {
@@ -26,18 +26,6 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
-
-
-
-//    private String createToken(Map<String, Object> claims, String subject) {
-//        return Jwts.builder()
-//                .setClaims(claims)
-//                .setSubject(subject)
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-//                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-//                .compact();
-//    }
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

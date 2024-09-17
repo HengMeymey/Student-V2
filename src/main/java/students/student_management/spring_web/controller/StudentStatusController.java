@@ -27,21 +27,36 @@ public class StudentStatusController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentStatus>> getAllStudentStatuses() {
+    public ResponseEntity<Map<String, Object>> getAllStudentStatuses() {
         List<StudentStatus> studentStatuses = studentStatusService.getAllStudentStatuses();
+        Map<String, Object> response = new HashMap<>();
+
         if (studentStatuses.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(studentStatuses);
+            response.put("message", "No student status to display");
+            response.put("status", "SUCCESS");
+            response.put("data", studentStatuses);
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.ok(studentStatuses);
+
+        response.put("message", "Student statuses retrieved successfully!");
+        response.put("status", "SUCCESS");
+        response.put("data", studentStatuses);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStudentStatusById(@PathVariable Long id) {
-            StudentStatus studentStatus = studentStatusService.getStudentStatusById(id);
+    public ResponseEntity<Map<String, Object>> getStudentStatusById(@PathVariable Long id) {
+        StudentStatus studentStatus = studentStatusService.getStudentStatusById(id);
+        Map<String, Object> response = new HashMap<>();
+
         if (studentStatus == null) {
             throw new ResourceNotFoundException("Student Status not found with id: " + id);
         }
-            return ResponseEntity.ok(studentStatus);
+
+        response.put("message", "Student Status retrieved successfully!");
+        response.put("status", "SUCCESS");
+        response.put("data", studentStatus);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -51,12 +66,14 @@ public class StudentStatusController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Student Status created successfully!");
-            response.put("status", savedStatus);
+            response.put("status", "SUCCESS");
+            response.put("data", savedStatus);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to create student status: " + e.getMessage());
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
@@ -67,20 +84,22 @@ public class StudentStatusController {
             StudentStatus studentStatus = studentStatusService.updateStudentStatus(id, updatedStatus);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Student Status updated successfully!");
-            response.put("status", studentStatus);
+            response.put("status", "SUCCESS");
+            response.put("data", studentStatus);
 
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to update student status: " + e.getMessage());
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteStudentStatus(@PathVariable Long id) {
@@ -91,9 +110,9 @@ public class StudentStatusController {
         }
         studentStatusService.deleteStudentStatus(id);
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Student Status has been deleted successfully !!");
+        response.put("message", "Student Status has been deleted successfully!!");
+        response.put("status", "SUCCESS");
 
         return ResponseEntity.ok(response);
     }
-
 }
