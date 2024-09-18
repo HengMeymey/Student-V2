@@ -30,12 +30,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Returns whether the user account is enabled
     @Getter
     @Column(nullable = false)
     private boolean enabled = true;
 
-    // Check if credentials are non-expired
     @Getter
     @Column(nullable = false)
     private boolean credentialsNonExpired = true;
