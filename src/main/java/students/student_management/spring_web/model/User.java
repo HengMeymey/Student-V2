@@ -30,32 +30,25 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // Returns whether the user account is enabled
+    @Getter
     @Column(nullable = false)
-    private boolean enabled = true; // Default to enabled
+    private boolean enabled = true;
 
-    // Add this field to manage credentials expiration
+    // Check if credentials are non-expired
+    @Getter
     @Column(nullable = false)
-    private boolean credentialsNonExpired = true; // Default to non-expired
+    private boolean credentialsNonExpired = true;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name())); // Return the user's roles as authorities
-    }
-
-    // Implement UserDetails interface methods
-
-    public boolean isEnabled() {
-        return enabled; // Returns whether the user account is enabled
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     public boolean isAccountNonLocked() {
-        return true; // Implement logic if needed
-    }
-
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired; // Check if credentials are non-expired
+        return true;
     }
 
     public boolean isAccountNonExpired() {
-        return true; // Implement logic if needed
+        return true;
     }
 }

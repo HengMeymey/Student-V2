@@ -27,12 +27,4 @@ public class Department {
     @Size(max = 100, message = "Name cannot exceed 100 characters")
     @Column(nullable = false, length = 100)
     private String name;
-
-//    @OneToMany(mappedBy = "department")
-//    @JsonManagedReference(value = "department-students")
-//    private List<Student> students;
-//
-//    @OneToMany(mappedBy = "department")
-//    @JsonManagedReference(value = "department-teachers")
-//    private List<Teacher> teachers;
 }

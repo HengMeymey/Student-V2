@@ -39,11 +39,9 @@ public class EnrollmentService {
         Class courseClass = classRepository.findById(enrollment.getCourseClass().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + enrollment.getCourseClass().getId()));
 
-        // Set the fully populated student and courseClass in the enrollment
         enrollment.setStudent(student);
         enrollment.setCourseClass(courseClass);
 
-        // Save the enrollment with populated details
         return enrollmentRepository.save(enrollment);
     }
 

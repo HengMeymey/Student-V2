@@ -9,9 +9,8 @@ public class UserDto {
 
     @NotBlank(message = "Password cannot be blank")
     private String password;
-    private String role; // Ensure this field is present
+    private String role;
 
-    // Getters and Setters
     public String getUsername() {
         return username;
     }

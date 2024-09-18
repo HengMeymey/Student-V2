@@ -5,9 +5,8 @@ import java.util.List;
 public class ApiResponse<T> {
     private String message;
     private String status;
-    private List<T> data; // Use List<T> or whatever type your data is
+    private List<T> data;
 
-    // Constructors, getters, and setters
     public ApiResponse(String message, String status, List<T> data) {
         this.message = message;
         this.status = status;

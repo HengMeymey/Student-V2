@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository; // Your repository to fetch user data
+    private final UserRepository userRepository;
 
     @Autowired
     public MyUserDetailsService(UserRepository userRepository) {
@@ -26,13 +26,10 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch the user from the database
         Optional<User> optionalUser = userRepository.findByUsername(username);
 
-        // Retrieve the user or throw an exception if not found
         User user = optionalUser.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // Return a UserDetails object
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),

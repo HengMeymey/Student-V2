@@ -30,27 +30,20 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // Implement your logic here to check if the account is not expired
-        // For example, you could check a database field or use a flag
-        return true; // Assuming the account is not expired by default
+        return true;
     }
     @Override
     public boolean isAccountNonLocked() {
-        // Implement your logic here to check if the account is not locked
-        // For example, you could check a database field or use a flag
-        return true; // Assuming the account is not locked by default
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return user.isCredentialsNonExpired(); // Ensure this returns the correct status
+        return user.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
         return user.isEnabled();
     }
-
-    // Implement the remaining methods of UserDetails (not shown here)
-    // These methods typically check for account non-locked, enabled status, etc.
 }

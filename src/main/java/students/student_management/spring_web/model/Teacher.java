@@ -43,6 +43,5 @@ public class Teacher {
     @NotNull(message = "Department cannot be null")
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
-//    @JsonManagedReference(value = "department-teachers")
     private Department department;
 }

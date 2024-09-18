@@ -35,15 +35,13 @@ public class UserService {
         // Create a new User object from UserDto
         User user = new User();
         user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword())); // Encode the password
-        user.setRole(Role.USER); // Set default role, or from DTO if dynamic
-        user.setEnabled(true); // Ensure the user is enabled
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setRole(Role.USER);
+        user.setEnabled(true);
         user.setCredentialsNonExpired(true);
 
-        // Save the user to the database
         userRepository.save(user);
 
-        // Prepare success response
         response.put("status", "SUCCESS");
         response.put("message", "User created successfully!");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

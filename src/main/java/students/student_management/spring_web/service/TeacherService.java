@@ -30,7 +30,6 @@ public class TeacherService {
     }
 
     public Teacher saveTeacher(Teacher teacher) {
-        // Check for duplicate email
         if (teacherRepository.existsByEmail(teacher.getEmail())) {
             throw new IllegalArgumentException("Email already exists: " + teacher.getEmail());
         }

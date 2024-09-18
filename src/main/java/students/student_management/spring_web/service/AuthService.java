@@ -33,14 +33,12 @@ public class AuthService {
     public ResponseEntity<Map<String, Object>> login(AuthRequest authRequest) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Authenticate the user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
             );
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
 
-            // Generate JWT token
             String jwtToken = jwtUtil.generateToken(userDetails);
 
             response.put("status", "SUCCESS");

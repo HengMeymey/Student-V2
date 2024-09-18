@@ -34,7 +34,6 @@ public class StudentService {
         return departmentRepository.existsById(departmentId);
     }
 
-    // Method to check if a student status exists
     public boolean studentStatusExists(Long studentStatusId) {
         return studentStatusRepository.existsById(studentStatusId);
     }
@@ -61,7 +60,6 @@ public class StudentService {
             Department department = departmentRepository.findById(student.getDepartment().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
-            // Set the full objects
             student.setStudentStatus(status);
             student.setDepartment(department);
 
@@ -108,7 +106,6 @@ public class StudentService {
 
         return studentRepository.save(existingStudent);
     }
-
 
     public void deleteStudent(Long id) {
         studentRepository.deleteById(id);

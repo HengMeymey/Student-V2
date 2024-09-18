@@ -45,28 +45,4 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
         departmentRepository.delete(department);
     }
-
-//    public List<Student> getAllStudents() {
-//        return departmentRepository.findAll().stream()
-//                .flatMap(department -> department.getStudents().stream())
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<Teacher> getAllTeachers() {
-//        return departmentRepository.findAll().stream()
-//                .flatMap(department -> department.getTeachers().stream())
-//                .collect(Collectors.toList());
-//    }
-//
-//    public List<Student> getStudentsByDepartmentId(Long departmentId) {
-//        return departmentRepository.findById(departmentId)
-//                .map(Department::getStudents)
-//                .orElse(Collections.emptyList());
-//    }
-//
-//    public List<Teacher> getTeachersByDepartmentId(Long departmentId) {
-//        return departmentRepository.findById(departmentId)
-//                .map(Department::getTeachers)
-//                .orElse(Collections.emptyList());
-//    }
 }

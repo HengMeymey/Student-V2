@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authorizationHeader = request.getHeader("Authorization");
         String requestURI = request.getRequestURI();
 
-        // Allow access to specific paths without token
         if (requestURI.equals("/auth/create") || requestURI.equals("/auth/login")) {
             filterChain.doFilter(request, response);
             return;
@@ -51,12 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                // Handle error, e.g., return unauthorized response
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         } else {
-            // Handle cases where the token is missing for authenticated routes
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
