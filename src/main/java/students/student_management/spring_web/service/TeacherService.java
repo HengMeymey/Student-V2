@@ -1,6 +1,5 @@
 package students.student_management.spring_web.service;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;

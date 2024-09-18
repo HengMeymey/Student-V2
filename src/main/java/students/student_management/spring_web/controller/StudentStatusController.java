@@ -1,13 +1,11 @@
 package students.student_management.spring_web.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
-import students.student_management.spring_web.model.Department;
 import students.student_management.spring_web.model.StudentStatus;
 import students.student_management.spring_web.service.StudentStatusService;
 

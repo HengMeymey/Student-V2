@@ -3,13 +3,9 @@ package students.student_management.spring_web.service;
 import org.springframework.stereotype.Service;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;
-import students.student_management.spring_web.model.Student;
-import students.student_management.spring_web.model.Teacher;
 import students.student_management.spring_web.repository.DepartmentRepository;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DepartmentService {

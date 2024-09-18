@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import students.student_management.spring_web.exception.JwtAuthenticationException; // Import your custom exception
+import students.student_management.spring_web.exception.JwtAuthenticationException;
 import students.student_management.spring_web.util.JwtUtil;
 
 import java.io.IOException;

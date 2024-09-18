@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import students.student_management.spring_web.dto.UserDto;
 import students.student_management.spring_web.dto.AuthRequest;
+import students.student_management.spring_web.dto.UserDto;
 import students.student_management.spring_web.service.AuthService;
 import students.student_management.spring_web.service.UserService;
 

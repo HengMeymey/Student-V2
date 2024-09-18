@@ -8,9 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Department;
-import students.student_management.spring_web.model.Student;
-import students.student_management.spring_web.model.StudentStatus;
-import students.student_management.spring_web.model.Teacher;
 import students.student_management.spring_web.service.DepartmentExcelExportService;
 import students.student_management.spring_web.service.DepartmentService;
 
@@ -30,6 +27,7 @@ public class DepartmentController {
         this.departmentService = departmentService;
         this.excelExportService = excelExportService; // Add this line
     }
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllDepartments() {
         try {
@@ -89,7 +87,7 @@ public class DepartmentController {
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to create department: " + e.getMessage());
-            errorResponse.put("status","FAIL");
+            errorResponse.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }

@@ -4,16 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import students.student_management.spring_web.dto.StudentEnrollmentDTO;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
-import students.student_management.spring_web.model.Course;
+import students.student_management.spring_web.model.Class;
 import students.student_management.spring_web.model.Enrollment;
 import students.student_management.spring_web.model.Student;
-import students.student_management.spring_web.model.Class;
 import students.student_management.spring_web.repository.ClassRepository;
 import students.student_management.spring_web.repository.EnrollmentRepository;
 import students.student_management.spring_web.repository.StudentRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

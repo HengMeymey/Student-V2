@@ -56,8 +56,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import students.student_management.spring_web.exception.ResourceNotFoundException;
-import students.student_management.spring_web.dto.ErrorResponse; // Import your ErrorResponse class
+import students.student_management.spring_web.dto.ErrorResponse;
 
 import java.util.HashMap;
 import java.util.Map;

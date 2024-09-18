@@ -20,6 +20,7 @@ public class StudentService {
     private final ThirdPartyApiService thirdPartyApiService;
     private final StudentStatusRepository studentStatusRepository;
     private final DepartmentRepository departmentRepository;
+
     public StudentService(StudentRepository studentRepository,
                           StudentStatusRepository studentStatusRepository,
                           DepartmentRepository departmentRepository,

@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import students.student_management.spring_web.exception.ResourceNotFoundException;
 import students.student_management.spring_web.model.Class;
 import students.student_management.spring_web.model.Course;
-import students.student_management.spring_web.model.Department;
-import students.student_management.spring_web.model.Time;
 import students.student_management.spring_web.repository.ClassRepository;
 import students.student_management.spring_web.repository.CourseRepository;
 

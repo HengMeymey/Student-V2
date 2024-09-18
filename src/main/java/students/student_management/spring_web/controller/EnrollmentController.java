@@ -122,6 +122,7 @@ public class EnrollmentController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
     @GetMapping("/students/export/excel")
     public ResponseEntity<byte[]> exportToExcel(HttpServletResponse response) throws IOException {
         List<StudentEnrollmentDTO> enrollments = enrollmentService.getAllStudentEnrollments();
