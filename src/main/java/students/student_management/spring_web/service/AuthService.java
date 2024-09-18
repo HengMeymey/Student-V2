@@ -12,9 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import students.student_management.spring_web.model.AuthRequest;
-import students.student_management.spring_web.model.JwtResponse;
-import students.student_management.spring_web.repository.UserRepository;
+import students.student_management.spring_web.dto.AuthRequest;
 import students.student_management.spring_web.util.JwtUtil;
 
 import java.util.HashMap;

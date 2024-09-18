@@ -1,4 +1,4 @@
-package students.student_management.spring_web.model;
+package students.student_management.spring_web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
