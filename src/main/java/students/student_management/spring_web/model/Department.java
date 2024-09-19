@@ -18,7 +18,7 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Department name is mandatory")
+    @NotBlank(message = "Department name is required")
     @Size(max = 100, message = "Name cannot exceed 100 characters")
     @Column(nullable = false, length = 100)
     private String name;

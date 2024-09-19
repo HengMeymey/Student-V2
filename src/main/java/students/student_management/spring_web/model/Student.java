@@ -17,7 +17,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank(message = "Name is required")
     @Size(max = 60, message = "Name cannot exceed 60 characters")
     @Column(nullable = false, length = 60)
     private String name;
@@ -26,21 +26,21 @@ public class Student {
     @Column(nullable = false, unique = true)
     private String contact;
 
-    @NotNull(message = "Date of birth is mandatory")
+    @NotNull(message = "Date of birth is required")
     @Temporal(TemporalType.DATE)
     private Date dob;
 
-    @NotBlank(message = "Gender is mandatory")
+    @NotBlank(message = "Gender is required")
     @Size(max = 10, message = "Gender cannot exceed 10 characters")
     @Column(nullable = false, length = 10)
     private String gender;
 
-    @NotNull(message = "Student status is mandatory")
+    @NotNull(message = "Student status is required")
     @ManyToOne
     @JoinColumn(name = "student_status_id", nullable = false)
     private StudentStatus studentStatus;
 
-    @NotNull(message = "Department is mandatory")
+    @NotNull(message = "Department is required")
     @ManyToOne
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;

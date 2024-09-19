@@ -23,6 +23,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         // Write a custom JSON response
         response.getWriter().write("{\"status\": \"FAIL\", \"message\": \"Unauthorized: Token has expired or is invalid\"}");
-        response.getWriter().flush(); // Ensure the response is written out completely
+        response.getWriter().flush();
     }
 }

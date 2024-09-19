@@ -92,7 +92,7 @@ public class EnrollmentController {
             existingEnrollment.setEnrollmentDate(updatedEnrollment.getEnrollmentDate());
             existingEnrollment.setYear(updatedEnrollment.getYear());
 
-            Enrollment updateEnrollment = enrollmentService.saveEnrollment(updatedEnrollment);
+            Enrollment updateEnrollment = enrollmentService.updateEnrollment(id,updatedEnrollment);
             response.put("message", "Enrollment updated successfully!");
             response.put("status", "SUCCESS");
             response.put("data", updateEnrollment);
@@ -121,6 +121,12 @@ public class EnrollmentController {
             response.put("status", "FAIL");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
+    }
+
+    @GetMapping("/students")
+    public ResponseEntity<List<StudentEnrollmentDTO>> getAllStudentEnrollments() {
+        List<StudentEnrollmentDTO> enrollments = enrollmentService.getAllStudentEnrollments();
+        return ResponseEntity.ok(enrollments);
     }
 
     @GetMapping("/students/export/excel")

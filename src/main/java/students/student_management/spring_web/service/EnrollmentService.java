@@ -56,21 +56,25 @@ public class EnrollmentService {
         Enrollment existingEnrollment = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Enrollment not found with ID: " + id));
 
+        // Check and update student if provided
         if (updatedEnrollment.getStudent() != null) {
             Student student = studentRepository.findById(updatedEnrollment.getStudent().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Student not found with ID: " + updatedEnrollment.getStudent().getId()));
             existingEnrollment.setStudent(student);
         }
 
+        // Check and update class if provided
         if (updatedEnrollment.getCourseClass() != null) {
             Class courseClass = classRepository.findById(updatedEnrollment.getCourseClass().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Class not found with ID: " + updatedEnrollment.getCourseClass().getId()));
             existingEnrollment.setCourseClass(courseClass);
         }
 
+        // Update other fields
         existingEnrollment.setEnrollmentDate(updatedEnrollment.getEnrollmentDate());
         existingEnrollment.setYear(updatedEnrollment.getYear());
 
+        // Save the existing enrollment with updated information
         return enrollmentRepository.save(existingEnrollment);
     }
 
